@@ -1,0 +1,64 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/usr/bin/npm', 'install' ]
+info using npm@1.1.4
+info using node@v0.6.12
+verbose config file /home/rosbox/.npmrc
+verbose config file /usr/etc/npmrc
+verbose config file /usr/share/npm/npmrc
+verbose caching /home/rosbox/LunaTron/package.json
+verbose loadDefaults LunaTron@0.0.1
+verbose readDependencies: using package.json deps
+verbose where, deps [ '/home/rosbox/LunaTron', [ 'body-parser', 'express' ] ]
+verbose from cache /home/rosbox/LunaTron/package.json
+info preinstall LunaTron@0.0.1
+verbose from cache /home/rosbox/LunaTron/package.json
+verbose readDependencies: using package.json deps
+verbose cache add [ 'body-parser@1.9.0', null ]
+silly cache add: name, spec, args [ undefined, 'body-parser@1.9.0', [ 'body-parser@1.9.0', null ] ]
+verbose parsed url { pathname: 'body-parser@1.9.0',
+verbose parsed url   path: 'body-parser@1.9.0',
+verbose parsed url   href: 'body-parser@1.9.0' }
+silly cache add: name, spec, args [ 'body-parser', '1.9.0', [ 'body-parser', '1.9.0' ] ]
+verbose parsed url { pathname: '1.9.0', path: '1.9.0', href: '1.9.0' }
+verbose addNamed [ 'body-parser', '1.9.0' ]
+verbose addNamed [ '1.9.0', '1.9.0' ]
+verbose cache add [ 'express@1.0.0', null ]
+silly cache add: name, spec, args [ undefined, 'express@1.0.0', [ 'express@1.0.0', null ] ]
+verbose parsed url { pathname: 'express@1.0.0',
+verbose parsed url   path: 'express@1.0.0',
+verbose parsed url   href: 'express@1.0.0' }
+silly cache add: name, spec, args [ 'express', '1.0.0', [ 'express', '1.0.0' ] ]
+verbose parsed url { pathname: '1.0.0', path: '1.0.0', href: '1.0.0' }
+verbose addNamed [ 'express', '1.0.0' ]
+verbose addNamed [ '1.0.0', '1.0.0' ]
+verbose raw, before any munging body-parser/1.9.0
+verbose url resolving [ 'https://registry.npmjs.org/', './body-parser/1.9.0' ]
+verbose url resolved https://registry.npmjs.org/body-parser/1.9.0
+http GET https://registry.npmjs.org/body-parser/1.9.0
+verbose raw, before any munging express/1.0.0
+verbose url resolving [ 'https://registry.npmjs.org/', './express/1.0.0' ]
+verbose url resolved https://registry.npmjs.org/express/1.0.0
+http GET https://registry.npmjs.org/express/1.0.0
+ERR! Error: failed to fetch from registry: body-parser/1.9.0
+ERR!     at /usr/share/npm/lib/utils/npm-registry-client/get.js:139:12
+ERR!     at cb (/usr/share/npm/lib/utils/npm-registry-client/request.js:31:9)
+ERR!     at Request._callback (/usr/share/npm/lib/utils/npm-registry-client/request.js:136:18)
+ERR!     at Request.callback (/usr/lib/nodejs/request/main.js:119:22)
+ERR!     at Request.<anonymous> (/usr/lib/nodejs/request/main.js:212:58)
+ERR!     at Request.emit (events.js:88:20)
+ERR!     at ClientRequest.<anonymous> (/usr/lib/nodejs/request/main.js:412:12)
+ERR!     at ClientRequest.emit (events.js:67:17)
+ERR!     at HTTPParser.onIncoming (http.js:1261:11)
+ERR!     at HTTPParser.onHeadersComplete (http.js:102:31)
+ERR! You may report this log at:
+ERR!     <http://bugs.debian.org/npm>
+ERR! or use
+ERR!     reportbug --attach /home/rosbox/LunaTron/npm-debug.log npm
+ERR! 
+ERR! System Linux 3.13.0-52-generic
+ERR! command "node" "/usr/bin/npm" "install"
+ERR! cwd /home/rosbox/LunaTron
+ERR! node -v v0.6.12
+ERR! npm -v 1.1.4
+ERR! message failed to fetch from registry: body-parser/1.9.0
+verbose exit [ 1, true ]

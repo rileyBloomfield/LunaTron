@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="CSS/bootstrap-theme.min.css">
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="libs/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="libs/roslib.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+    <title>LunaTron</title>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a id="connectionStatus" style="color:red;">Disconected</a></li>
+                    <li><a id="connectionIP"></a></li>
+                    <li><a><input id="inputIP" type="text"><button type="button" onclick="reconnectRos();">Connect</button></a></li>
+		    <li><a>Frame Timeout: <input id="frameTimeoutInput" type="number" value="5" onchange="changeFrameTimeout();"></input></a></li>
+		    <li><a><button type="button" onclick="pingServer();">Ping Server</button></a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="well">
+                        <h5><u>Monitor</u></h5>
+                        <h6>Current</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                LF: <span id="LFC">0.00</span><br>
+                                LM: <span id="LMC">0.00</span><br>
+                                LR: <span id="LRC">0.00</span><br>
+                            </div>
+                            <div class="col-md-6">
+                                RF: <span id="RFC">0.00</span><br>
+                                RM: <span id="RMC">0.00</span><br>
+                                RR: <span id="RRC">0.00</span><br>
+                            </div>
+                        </div>
+                        <h6>Strain</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                LF: <span id="LFS"></span><br>
+                                LM: <span id="LMS"></span><br>
+                                LR: <span id="LRS"></span><br>
+                            </div>
+                            <div class="col-md-6">
+                                RF: <span id="RFS"></span><br>
+                                RM: <span id="RMS"></span><br>
+                                RR: <span id="RRS"></span><br>
+                            </div>
+                        </div>
+                    </div>
+		    <div class="well">
+		    <h5>Serial Monitor</h5>
+		    DriveCommands:<input id="driveInput" type="text"></input><button id="driveButton" onclick="publishDriveCommand();">Send</button><br><br>
+		    DutyCommands:<input id="dutyInput" type="text"></input><button id="dutyButton" onclick="publishDutyCommand();">Send</button><br><br>
+<textarea readonly rows="15" cols="50" id="serialIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
+		    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="well">
+                        <h5><u>Video</u></h5>
+                        <canvas id="canvas" width="320px" height="240px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="well">
+                        <h5>Rosout - <a id="showhiderosout" onclick="toggleRosout();">hide</a></h5>
+                        <div id="rosoutDiv">
+                            <span>
+                                <input id="sendRosoutText" type="text">
+                                <button type="button" onclick="publishRosout();">Send</button>
+                            </span>
+                            <br><br>
+                            <textarea readonly rows="15" cols="50" id="rosoutIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
+                        </div><br>
+
+                        <h5>Listener - <a id="showhidelistener" onclick="toggleListener();">hide</a></h5>
+                        <div id="listenerDiv">
+                            <span>
+                                <input id="sendListenerText" type="text">
+                                <button type="button" onclick="publishListener();">Send</button>
+                            </span>
+                            <br><br>
+                            <textarea readonly rows="15" cols="50" id="listenerIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
