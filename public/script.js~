@@ -40,6 +40,8 @@ var dutyCommands;
 var currentSensors;
 var loadSensors;
 var encoderSensors;
+var serverPing;
+var clientPing;
 
 window.onload=function() {
     //FIND ELEMENTS
@@ -79,6 +81,12 @@ window.setInterval(function() {
 	if(attemptReconnect) {
 		reconnectRos();
 	}else {
+	//SEND PING TO SERVER
+	var mess = new ROSLIB.Message({
+            data: "PING"
+        });
+	clientPing.publish(mess);
+
 	timeCounter++;
 		if(timeCounter>acceptedTimeDiff) {
 			closeSocket();
@@ -132,6 +140,18 @@ function initTopics() {
         ros : ros,
         name : '/image_raw/compressed',
         messageType : 'sensor_msgs/CompressedImage'
+    });
+
+    serverPing = new ROSLIB.Topic({
+        ros : ros,
+        name : '/serverPing',
+        messageType : 'std_msgs/String'
+    });
+
+    clientPing = new ROSLIB.Topic({
+        ros : ros,
+        name : '/clientPing',
+        messageType : 'std_msgs/String'
     });
 
     currentSensors = new ROSLIB.Topic({
@@ -190,15 +210,17 @@ function initTopics() {
     });
 
     image_rawCompressed.subscribe(function(message) {
-        //Reset timer
-	timeCounter = 0;
-        
 	//PAINT JPEG TO CANVAS
 	var imgObj = new Image();
 	imgObj.onload = function() {
 		ctx.drawImage(imgObj, 0, 0);
 	};
 	imgObj.src = 'data:image/jpg;base64,'+message.data;
+    });
+
+    serverPing.subscribe(function(message) {
+	//Reset timer
+	timeCounter = 0;
     });
 }
 
