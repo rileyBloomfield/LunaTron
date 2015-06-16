@@ -7,12 +7,14 @@ var connected = false;
 var attemptReconnect = false;
 
 //OTHER ELEMENTS
+var ws;
 var ros;
 var connectionStatus;
 var connectionAddress = '129.100.231.84';
 var connectionIP;
 var inputIP;
 var driveInput;
+var dutyInput;
 var steering;
 var timeCounter = 0;
 var acceptedTimeDiff = 5;
@@ -51,6 +53,7 @@ window.onload=function() {
     rosoutIn = document.getElementById('rosoutIn');
     listenerIn = document.getElementById('listenerIn');
     driveInput = document.getElementById('driveInput');
+    dutyInput = document.getElementById('dutyInput');
     connectionStatus = document.getElementById('connectionStatus');
     connectionIP = document.getElementById('connectionIP');
     inputIP = document.getElementById('inputIP');
@@ -89,7 +92,7 @@ window.setInterval(function() {
 
 	timeCounter++;
 		if(timeCounter>acceptedTimeDiff) {
-			closeSocket();
+			closeSockets();
 			timeCounter = 0;
 			attemptReconnect = true;
 		}	
@@ -97,6 +100,7 @@ window.setInterval(function() {
 }, 200);
 
 function initTopics() {
+
     //DEFINE CONNECTION
     ros.on('connection', function() {
         connected = true;
@@ -228,57 +232,13 @@ function reconnectRos() {
     attemptReconnect = false;
     if(connected && (inputIP.value == connectionAddress))
         return;
-    closeSocket();
+    closeSockets();
     connectionAddress = inputIP.value;
     console.log('Attempt connection at '+connectionAddress);
     ros = new ROSLIB.Ros({
         url : 'ws://'+connectionAddress+':9090'
     });
     initTopics();
-};
-
-window.onkeyup = function(e) {
-    if (enableArrows) {
-        var key = e.keyCode ? e.keyCode : e.which;
-        if (key == 37) {
-            steering.innerHTML = '<h5>LEFT</h5>';
-        }else if (key == 38) {
-            steering.innerHTML = '<h5>UP</h5>';
-        }else if (key == 39) {
-            steering.innerHTML = '<h5>RIGHT</h5>';
-        }
-        else if (key == 40) {
-            steering.innerHTML = '<h5>DOWN</h5>';
-        }
-    }
-};
-
-function toggleKeys() {
-    if(enableArrows) {
-        enableArrows = false;
-        toggleKeyButton.innerHTML = 'Enable Arrow Keys';
-        steering.innerHTML = '';
-    }
-    else {
-        enableArrows = true;
-        toggleKeyButton.innerHTML = 'Disable Arrow Keys';
-    }
-};
-
-function publishCmd_vel(x, y, x, xA, yA, zA) {
-    var twist = new ROSLIB.Message({
-        linear : {
-            x : x,
-            y : y,
-            z : z
-        },
-        angular : {
-            x : -xA,
-            y : -yA,
-            z : -zA
-        }
-    });
-    cmdVel.publish(twist);
 };
 
 function toggleRosout() {
@@ -332,7 +292,7 @@ function publishListener() {
     listener.publish(mess);
 };
 
-function closeSocket() {
+function closeSockets() {
     //CLEAN UP SUBSCRIPTIONS & CLOSE SOCKET
     listener.unsubscribe();
     rosout.unsubscribe();
@@ -365,18 +325,29 @@ function publishDriveCommand() {
 	var input = driveInput.value;
 	driveInput.value = '';
 	var mess = new ROSLIB.Message({
-        data: input
-    });
+            data: input
+        });
 	driveCommands.publish(mess);
-}
+
+};
 
 function publishDutyCommand() {
 	var input = dutyInput.value;
 	dutyInput.value = '';
 	var mess = new ROSLIB.Message({
-        data: input
-    });
+            data: input
+        });
 	dutyCommands.publish(mess);
-}
+};
+
+
+
+
+
+
+
+
+
+
 
 
