@@ -13,7 +13,7 @@ Motor Motor::BR(7, 53, 51, State::BRAKE, CurrentSensor::BR);
 
 Motor* Motor::location[6] = { &Motor::BL, &Motor::ML, &Motor::FL, &Motor::FR, &Motor::MR, &Motor::BR };
 
-Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor &sensor) : getCurrent(sensor)
+Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location)
 {
 	//Set Motor Values
 	_PWMpin = pin;
@@ -22,6 +22,7 @@ Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor &sensor) : getCur
 	_pinB = B;
 	_direction = &dir;
 	//_comm = &TWI_Comm::TWI_PORT;
+	_currsensor = &location;
 	pinMode(_PWMpin, OUTPUT);
 	analogWrite(_PWMpin, _dutyCycle * 255);
 	pinMode(_pinA, OUTPUT);

@@ -30,14 +30,14 @@ class Motor
 
 	//Data
 	public:
-	const CurrentSensor &getCurrent;
-
+	
 	private:
 	int _PWMpin;
 	int _pinA;
 	int _pinB;
 	float _dutyCycle;
 	State* _direction;
+	CurrentSensor* _currsensor;
 	LoadCell* _LoadSensor;
 	//TWI_Comm* _comm;
 	float diameter;
@@ -60,6 +60,7 @@ class Motor
 	void switchDirection();
 
 	void setDuty(float duty);
+	float getCurrent();
 	int getEncCount();
 	void ZeroEncCount();
 	//void calcVelocity(unsigned long currentTime, unsigned long pastTime);

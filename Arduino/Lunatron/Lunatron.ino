@@ -72,7 +72,7 @@ void loop()
 
 void publishCurrent() {
   //get data from motors
-  char msg[64] = {0}, *m = msg; //might have to be 256?
+  char msg[64] = {0}, *m = msg; 
   for (int i = 0; i < 6; i++) {
     dtostrf(Motor::location[i]->getCurrent(), 4, 2, m);
     while(*m) { m++; }
