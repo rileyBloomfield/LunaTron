@@ -1,38 +1,42 @@
 //TOGGLES
 var togglelistener = true;
 var togglerosout = true;
-var enableArrows = false;
-var toggleKeyButton;
-var connected = false;
-var attemptReconnect = false;
 
-//OTHER ELEMENTS
+//ROS Elements
 var ws;
 var ros;
+
+//Connection Elements
+var connected = false;
+var attemptReconnect = false;
 var connectionStatus;
 var connectionAddress = '129.100.231.84';
 var connectionIP;
 var inputIP;
-var driveInput;
-var dutyInput;
-var steering;
 var timeCounter = 0;
 var acceptedTimeDiff = 5;
-//Adjusting frameTimeoutInput changes how many dropped frames are allowed before declaring connection lost
 var frameTimeoutInput;
-//CURRENT SENSOR OUTS
+
+//Control Elements
+var driveInput;
+var dutyInput;
+
+//Current Elements
 var currentElements = [];
 
-//TEXTAREAS
+//Velocity Elements
+var xVel, yVel, zVel;
+
+//TextAreas
 var rosoutIn;
 var listenerIn;
 var serialOut;
 
-//IMAGE CANVAS
+//Image Canvas
 var ctx;
 var canvas;
 
-//TOPICS LIST PUBLISH OR SUBSCRIBE
+//Topics List
 var cmdVel;
 var rosout;
 var listener;
@@ -43,13 +47,11 @@ var currentSensors;
 var loadSensors;
 var encoderSensors;
 var serverPing;
-var clientPing;
+var VO_Velocity;
 
 window.onload=function() {
     //FIND ELEMENTS
     frameTimeoutInput = document.getElementById('frameTimeoutInput');
-    steering = document.getElementById('steering');
-    toggleKeyButton = document.getElementById('toggleKeys');
     rosoutIn = document.getElementById('rosoutIn');
     listenerIn = document.getElementById('listenerIn');
     driveInput = document.getElementById('driveInput');
@@ -57,22 +59,31 @@ window.onload=function() {
     connectionStatus = document.getElementById('connectionStatus');
     connectionIP = document.getElementById('connectionIP');
     inputIP = document.getElementById('inputIP');
+
+    //Current Display
     currentElements[0] = document.getElementById('RFC');
     currentElements[1] = document.getElementById('RMC');
     currentElements[2] = document.getElementById('RRC');
     currentElements[3] = document.getElementById('LRC');
     currentElements[4] = document.getElementById('LMC');
     currentElements[5] = document.getElementById('LFC');
+
+    //Velocity Display
+    xVel = document.getElementById('xVel');
+    yVel = document.getElementById('yVel');
+    zVel = document.getElementById('zVel');
+
+    //Canvas Display
     canvas = document.querySelector("#canvas");
-    //SET CANVAS CONTEXT
     ctx = canvas.getContext("2d");
     ctx.fillRect(0,0,canvas.width, canvas.height);
-    //SET CONNECTION ADDRESS
+
+    //Set Connection Address
     connectionIP.innerHTML = connectionAddress;
     inputIP.value = connectionAddress;
     console.log('Attempt connection at '+connectionAddress);
 
-    //INITIALIZE CONNECTION
+    //Initialize Connection
     ros = new ROSLIB.Ros({
         url : 'ws://'+connectionAddress+':9090'
     });
@@ -84,12 +95,6 @@ window.setInterval(function() {
 	if(attemptReconnect) {
 		reconnectRos();
 	}else {
-	//SEND PING TO SERVER
-	var mess = new ROSLIB.Message({
-            data: "PING"
-        });
-	clientPing.publish(mess);
-
 	timeCounter++;
 		if(timeCounter>acceptedTimeDiff) {
 			closeSockets();
@@ -100,7 +105,6 @@ window.setInterval(function() {
 }, 200);
 
 function initTopics() {
-
     //DEFINE CONNECTION
     ros.on('connection', function() {
         connected = true;
@@ -152,12 +156,6 @@ function initTopics() {
         messageType : 'std_msgs/String'
     });
 
-    clientPing = new ROSLIB.Topic({
-        ros : ros,
-        name : '/clientPing',
-        messageType : 'std_msgs/String'
-    });
-
     currentSensors = new ROSLIB.Topic({
 	ros: ros,
 	name: '/currentSensors',
@@ -188,6 +186,12 @@ function initTopics() {
 	messageType: 'std_msgs/String'
     });
 
+    VO_Velocity = new ROSLIB.Topic({
+	ros: ros,
+	name: '/VO_Velocity',
+	messageType: 'geometry_msgs/Twist'
+    });
+
     listener.subscribe(function(message){
         listenerIn.value += listener.name + ': ' + message.data + '\n\n';
     });
@@ -209,6 +213,12 @@ function initTopics() {
 	console.log(loadSensors.name+ ': '+ message.data + '\n');
     });
 
+    VO_Velocity.subscribe(function(message) {
+	xVel.innerHTML = message.linear.x;
+	yVel.innerHTML = message.linear.y;
+	zVel.innerHTML = message.linear.z;
+    });
+
     encoderSensors.subscribe(function(message) {
 	console.log(encoderSensors.name+ ': '+ message.data + '\n');
     });
@@ -227,6 +237,15 @@ function initTopics() {
 	timeCounter = 0;
     });
 }
+
+function closeSockets() {
+    //CLEAN UP SUBSCRIPTIONS & CLOSE SOCKET
+    listener.unsubscribe();
+    rosout.unsubscribe();
+    image_rawCompressed.unsubscribe();
+    ctx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
+    ros.close();
+};
 
 function reconnectRos() {
     attemptReconnect = false;
@@ -292,15 +311,6 @@ function publishListener() {
     listener.publish(mess);
 };
 
-function closeSockets() {
-    //CLEAN UP SUBSCRIPTIONS & CLOSE SOCKET
-    listener.unsubscribe();
-    rosout.unsubscribe();
-    image_rawCompressed.unsubscribe();
-    ctx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
-    ros.close();
-};
-
 function pingServer() {
 	$.ajax({
             type: "POST",
@@ -322,14 +332,11 @@ function changeFrameTimeout() {
 };
 
 function publishDriveCommand() {
-alert('good');
 	var input = driveInput.value;
 	driveInput.value = '';
-alert('good again');
-var mess = new ROSLIB.Message({
-        data: input
-    });
-alert('good again');
+	var mess = new ROSLIB.Message({
+            data: input
+        });
 	driveCommands.publish(mess);
 
 };
@@ -337,9 +344,9 @@ alert('good again');
 function publishDutyCommand() {
 	var input = dutyInput.value;
 	dutyInput.value = '';
-var mess = new ROSLIB.Message({
-        data: input
-    });
+	var mess = new ROSLIB.Message({
+            data: input
+        });
 	dutyCommands.publish(mess);
 };
 

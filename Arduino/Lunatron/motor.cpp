@@ -1,20 +1,19 @@
 #include "Arduino.h"
 #include "motor.h"
 #include "state.h"
-#include "LoadCell.h"
+#include "CurrentSensor.h"
+//#include "Comm.h"
 
-#define PWM_FREQ 490
-
-Motor Motor::BL(2, 22, 24, State::BRAKE, LoadCell::BL, A2, 0.0351, 0.0224);
-Motor Motor::ML(3, 28, 30, State::BRAKE, LoadCell::ML, A3, 1, 0);
-Motor Motor::FL(4, 34, 36, State::BRAKE, LoadCell::FL, A4, 0.0214, 0.0427);
-Motor Motor::FR(5, 40, 42, State::BRAKE, LoadCell::FR, A5, 0.027, 0.0414);
-Motor Motor::MR(6, 46, 48, State::BRAKE, LoadCell::MR, A6, 0.0244, -0.1317);
-Motor Motor::BR(7, 53, 51, State::BRAKE, LoadCell::BR, A7, 0.0214, -0.2107);
+Motor Motor::BL(2, 22, 24, State::BRAKE, CurrentSensor::BL);
+Motor Motor::ML(3, 28, 30, State::BRAKE, CurrentSensor::ML);
+Motor Motor::FL(4, 34, 36, State::BRAKE, CurrentSensor::FL);
+Motor Motor::FR(5, 40, 42, State::BRAKE, CurrentSensor::FR);
+Motor Motor::MR(6, 46, 48, State::BRAKE, CurrentSensor::MR);
+Motor Motor::BR(7, 53, 51, State::BRAKE, CurrentSensor::BR);
 
 Motor* Motor::location[6] = { &Motor::BL, &Motor::ML, &Motor::FL, &Motor::FR, &Motor::MR, &Motor::BR };
 
-Motor::Motor(int pin, int A, int B, State& dir, LoadCell& location, int CurrentPin, float CurrentScale, float CurrentOffset)
+Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor &sensor) : getCurrent(sensor)
 {
 	//Set Motor Values
 	_PWMpin = pin;
@@ -22,18 +21,12 @@ Motor::Motor(int pin, int A, int B, State& dir, LoadCell& location, int CurrentP
 	_pinA = A;
 	_pinB = B;
 	_direction = &dir;
-	_LoadSensor = &location;
+	//_comm = &TWI_Comm::TWI_PORT;
 	pinMode(_PWMpin, OUTPUT);
 	analogWrite(_PWMpin, _dutyCycle * 255);
 	pinMode(_pinA, OUTPUT);
 	pinMode(_pinB, OUTPUT);
 	setDirection(*_direction);
-
-	//Set Current Sensor
-	_currentPin = CurrentPin;
-	_currentScale = CurrentScale;
-	_currentOffset = CurrentOffset;
-	pinMode(_currentPin, INPUT);
 }
 
 Motor::~Motor()
@@ -65,13 +58,26 @@ State& Motor::getDirection()
 
 float Motor::getCurrent()
 {
-	int sum = 0;
-	sumvar = 0;
-	for (int i = 0; i < POLL_COUNT; i++) 
-	{ 
-		sum += analogRead(_currentPin);
-		sumvar += analogRead(_currentPin)*analogRead(_currentPin);
+	float sum = 0;
+	for (int i = 0; i < POLL_COUNT; i++)
+	{
+		sum += (*_currsensor)(analogRead(_currsensor->Pin));
 	}
-	sumvar = sqrt(abs((sumvar - sum*sum / POLL_COUNT) / POLL_COUNT));
-	return (float)(sum / POLL_COUNT);
+	return sum/POLL_COUNT;
+}
+
+int Motor::getEncCount()
+{
+	int count = 0;
+	//_comm->ReceiveTransmission(EncDecAddr, DataSize);
+	//count = _comm->data[0];
+	count = count << 8;
+	//count |= _comm->data[1];
+	//_comm->SendTransmission(EncDecAddr, CLEAR);
+	return count;
+}
+
+void Motor::ZeroEncCount()
+{
+	//_comm->SendTransmission(EncDecAddr, CLEAR);
 }

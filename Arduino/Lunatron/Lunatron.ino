@@ -72,7 +72,7 @@ void loop()
 
 void publishCurrent() {
   //get data from motors
-  char msg[256] = {0}, *m = msg;
+  char msg[64] = {0}, *m = msg; //might have to be 256?
   for (int i = 0; i < 6; i++) {
     dtostrf(Motor::location[i]->getCurrent(), 4, 2, m);
     while(*m) { m++; }
@@ -96,6 +96,9 @@ void publishEncoder() {
 
 void driveAction(const std_msgs::String& action) {
   char switchChar = action.data[0];
+        for (int h = 0; h < 6; h++)
+                Motor::location[h]->
+                setDuty(0.4);
    switch(switchChar){
     case '0': //STOP
       for (int h = 0; h < 6; h++)

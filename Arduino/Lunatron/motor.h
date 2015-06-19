@@ -11,6 +11,12 @@
 #include "state.h"
 #include "LoadCell.h"
 #include "CurrentSensor.h"
+//#include "Comm.h"
+
+#define PWM_FREQ 490
+#define EncDecAddr 0x00
+#define DataSize 2
+#define CLEAR 0x01
 
 class Motor
 {
@@ -24,27 +30,28 @@ class Motor
 
 	//Data
 	public:
-	int sumvar;
+	const CurrentSensor &getCurrent;
 
 	private:
-	int _currentPin;
-	float _currentScale;
-	float _currentOffset;
-
-	LoadCell* _LoadSensor;
 	int _PWMpin;
 	int _pinA;
 	int _pinB;
 	float _dutyCycle;
-	State *_direction;
+	State* _direction;
+	LoadCell* _LoadSensor;
+	//TWI_Comm* _comm;
+	float diameter;
 	
+	int _EncoderPinA;
+	int _EncoderPinB;
+	float _velocity;
 
 	//Constructors
 	public:
 	~Motor();
 
 	private:
-	Motor(int PWMpin, int pinA, int pinB, State &direction, LoadCell &location, int currentPin, float currentScale, float currentOffset);
+	Motor(int PWMpin, int pinA, int pinB, State &direction, CurrentSensor &location);
 
 	//Methods
 	public:
@@ -53,7 +60,10 @@ class Motor
 	void switchDirection();
 
 	void setDuty(float duty);
-	float getCurrent();
+	int getEncCount();
+	void ZeroEncCount();
+	//void calcVelocity(unsigned long currentTime, unsigned long pastTime);
+
 };
 
 #endif
