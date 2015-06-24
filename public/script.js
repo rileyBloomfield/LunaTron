@@ -35,6 +35,8 @@ var serialOut;
 //Image Canvas
 var ctx;
 var canvas;
+var depthCtx;
+var depthCanvas;
 
 //Topics List
 var cmdVel;
@@ -48,6 +50,7 @@ var loadSensors;
 var encoderSensors;
 var serverPing;
 var VO_Velocity;
+var image_depthCompressed;
 
 window.onload=function() {
     //FIND ELEMENTS
@@ -74,9 +77,12 @@ window.onload=function() {
     zVel = document.getElementById('zVel');
 
     //Canvas Display
-    canvas = document.querySelector("#canvas");
-    ctx = canvas.getContext("2d");
+    canvas = document.querySelector('#canvas');
+    ctx = canvas.getContext('2d');
     ctx.fillRect(0,0,canvas.width, canvas.height);
+    depthCanvas = document.querySelector('#depthCanvas');
+    depthCtx = depthCanvas.getContext('2d');
+    depthCtx.fillRect(0,0,depthCanvas.width, depthCanvas.height);
 
     //Set Connection Address
     connectionIP.innerHTML = connectionAddress;
@@ -150,6 +156,12 @@ function initTopics() {
         messageType : 'sensor_msgs/CompressedImage'
     });
 
+    image_depthCompressed = new ROSLIB.Topic({
+        ros : ros,
+        name : '/depth_cam/compressed',
+        messageType : 'sensor_msgs/CompressedImage'
+    });
+
     serverPing = new ROSLIB.Topic({
         ros : ros,
         name : '/serverPing',
@@ -201,7 +213,6 @@ function initTopics() {
     });
 
     currentSensors.subscribe(function(message) {
-	console.log(currentSensors.name+ ': '+ message.data + '\n');
 	//PARSE DATA
 	var sensors = message.data.split(',');
 	for (var i=0; i<currentElements.length; i++) {
@@ -228,6 +239,16 @@ function initTopics() {
 	var imgObj = new Image();
 	imgObj.onload = function() {
 		ctx.drawImage(imgObj, 0, 0);
+	};
+	imgObj.src = 'data:image/jpg;base64,'+message.data;
+    });
+
+    image_depthCompressed.subscribe(function(message) {
+	console.log('hit');
+	//PAINT JPEG TO CANVAS
+	var imgObj = new Image();
+	imgObj.onload = function() {
+		depthCtx.drawImage(imgObj, 0, 0);
 	};
 	imgObj.src = 'data:image/jpg;base64,'+message.data;
     });

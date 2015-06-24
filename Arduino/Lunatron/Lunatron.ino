@@ -54,6 +54,8 @@ void setup()
   Serial.begin(57600);
 }
 
+
+
 void loop()
 {
   //Obtain current sensor data and publish
@@ -70,11 +72,14 @@ void loop()
   delay(500);
 }
 
+
 void publishCurrent() {
   //get data from motors
   char msg[64] = {0}, *m = msg; 
   for (int i = 0; i < 6; i++) {
-    dtostrf(Motor::location[i]->getCurrent(), 4, 2, m);
+      float f = Motor::location[i]->getCurrent();
+      Serial.println(f);
+    dtostrf(f, 4, 2, m);
     while(*m) { m++; }
     *m++ = ',';
   }
@@ -108,7 +113,8 @@ void driveAction(const std_msgs::String& action) {
       for (int h = 0; h < 3; h++)
         Motor::location[h]->setDirection(State::FWD);
       for (int h = 3; h < 6; h++)
-        Motor::location[h]->setDirection(State::REV);
+        Motor::location[h]->
+        setDirection(State::REV);
       break;
     case '2': //REVERSE
       for (int h = 0; h < 3; h++)

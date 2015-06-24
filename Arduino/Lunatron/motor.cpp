@@ -47,7 +47,8 @@ void Motor::setDirection(State &state)
 	digitalWrite(_pinB, state.readB());
 }
 
-void Motor::switchDirection()
+void Motor::
+switchDirection()
 {
 	_direction = &(_direction->opposite());
 }
@@ -55,14 +56,13 @@ void Motor::switchDirection()
 State& Motor::getDirection()
 {
 	return *_direction;
+
 }
 
-float Motor::getCurrent()
-{
+float Motor::getCurrent() {
 	float sum = 0;
-	for (int i = 0; i < POLL_COUNT; i++)
-	{
-		sum += (*_currsensor)(analogRead(_currsensor->Pin));
+	for (int i = 0; i < POLL_COUNT; i++) {
+		sum += (analogRead(_currsensor->Pin));
 	}
 	return sum/POLL_COUNT;
 }

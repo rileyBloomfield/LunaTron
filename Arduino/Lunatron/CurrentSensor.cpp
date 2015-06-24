@@ -18,7 +18,6 @@ CurrentSensor::CurrentSensor(int Pin, float CurrentScalepos, float CurrentScalen
 	_posxintercept = -_CurrentOffsetpos / _CurrentScalepos;
 	_negxintercept = -_CurrentOffsetneg / _CurrentScaleneg;
 	pinMode(Pin, INPUT);
-
 }
 
 CurrentSensor::~CurrentSensor()
@@ -28,6 +27,9 @@ CurrentSensor::~CurrentSensor()
 
 float CurrentSensor::operator()(float reading)
 {
+  
+  return reading;
+  /*
 	if (reading>_negxintercept && reading< _posxintercept)
 	{
 		return 0;
@@ -40,4 +42,5 @@ float CurrentSensor::operator()(float reading)
 	{
 		return _CurrentScalepos*reading + _CurrentOffsetpos;
 	}
+*/
 }
