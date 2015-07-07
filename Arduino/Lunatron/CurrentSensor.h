@@ -27,7 +27,7 @@ private:
 
 //Methods
 public:
-	int operator()(int reading, State &direction);
+	float operator()(int reading, State &direction);
 };
 
 

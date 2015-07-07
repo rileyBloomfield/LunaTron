@@ -57,9 +57,9 @@ float Motor::getCurrent() {
   for(int i=0; i<200; i++) {
     sum+= (*_currsensor)(analogRead(_currsensor->_pin), *_direction);
   }
-  Serial.println(sum/200);
  return sum/200;
 }
+
 
 
 int Motor::getEncCount()
