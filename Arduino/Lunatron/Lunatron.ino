@@ -18,9 +18,7 @@ void dutyAction(const std_msgs::String& action);
 ros::NodeHandle nh;
 
 //messages
-std_msgs::String currentData;
-std_msgs::String loadData;
-std_msgs::String encoderData;
+std_msgs::String currentData, loadData, encoderData;
 
 //subscribers
 ros::Subscriber<std_msgs::String> driveCommand("driveCommands", &driveAction);
@@ -33,8 +31,8 @@ ros::Publisher encoderSensors("encoderSensors", &encoderData);
 
 //charArray buffers
 char currentCharArray[60] = "1,2,3,4,5,6";
-char loadCharArray[60] = "";
-char encoderCharArray[60] = "";
+char loadCharArray[60] = "1,2,3,4,5,6";
+char encoderCharArray[60] = "1,2,3,4,5,6";
 
 void setup()
 {
@@ -54,8 +52,6 @@ void setup()
   Serial.begin(57600);
 }
 
-
-
 void loop()
 {
   //Obtain current sensor data and publish
@@ -69,22 +65,20 @@ void loop()
   
   //mandatory spin
   nh.spinOnce();
-  delay(500);
-}
 
+  delay(2000);
+}
 
 void publishCurrent() {
   //get data from motors
   char msg[64] = {0}, *m = msg; 
   for (int i = 0; i < 6; i++) {
-      float f = Motor::location[i]->getCurrent();
-      Serial.println(f);
+    float f = Motor::location[i]->getCurrent();
     dtostrf(f, 4, 2, m);
     while(*m) { m++; }
     *m++ = ',';
   }
   *(--m) = 0;
-  
   //publish
   currentData.data = msg;
   currentSensors.publish(&currentData);
@@ -101,9 +95,6 @@ void publishEncoder() {
 
 void driveAction(const std_msgs::String& action) {
   char switchChar = action.data[0];
-        for (int h = 0; h < 6; h++)
-                Motor::location[h]->
-                setDuty(0.4);
    switch(switchChar){
     case '0': //STOP
       for (int h = 0; h < 6; h++)
@@ -113,8 +104,7 @@ void driveAction(const std_msgs::String& action) {
       for (int h = 0; h < 3; h++)
         Motor::location[h]->setDirection(State::FWD);
       for (int h = 3; h < 6; h++)
-        Motor::location[h]->
-        setDirection(State::REV);
+        Motor::location[h]->setDirection(State::REV);
       break;
     case '2': //REVERSE
       for (int h = 0; h < 3; h++)

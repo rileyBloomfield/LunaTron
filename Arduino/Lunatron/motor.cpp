@@ -13,8 +13,7 @@ Motor Motor::BR(7, 53, 51, State::BRAKE, CurrentSensor::BR);
 
 Motor* Motor::location[6] = { &Motor::BL, &Motor::ML, &Motor::FL, &Motor::FR, &Motor::MR, &Motor::BR };
 
-Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location)
-{
+Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location) {
 	//Set Motor Values
 	_PWMpin = pin;
 	_dutyCycle = 1;
@@ -30,42 +29,38 @@ Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location)
 	setDirection(*_direction);
 }
 
-Motor::~Motor()
-{	
-}
+Motor::~Motor() {}
 
-void Motor::setDuty(float duty)
-{
+void Motor::setDuty(float duty) {
 	_dutyCycle = duty;
 	analogWrite(_PWMpin, _dutyCycle * 255);
 }
 
-void Motor::setDirection(State &state)
-{
+void Motor::setDirection(State &state) {
 	_direction = &state;
 	digitalWrite(_pinA, state.readA());
 	digitalWrite(_pinB, state.readB());
 }
 
-void Motor::
-switchDirection()
-{
+void Motor::switchDirection() {
 	_direction = &(_direction->opposite());
 }
 
-State& Motor::getDirection()
-{
+State& Motor::getDirection() {
 	return *_direction;
-
 }
 
+//Method returns average of current readings measured in amps
 float Motor::getCurrent() {
-	float sum = 0;
-	for (int i = 0; i < POLL_COUNT; i++) {
-		sum += (analogRead(_currsensor->Pin));
-	}
-	return sum/POLL_COUNT;
+  //Average multiple readings
+  float sum = 0;
+  for(int i=0; i<200; i++) {
+    sum+= (*_currsensor)(analogRead(_currsensor->_pin), *_direction);
+  }
+  Serial.println(sum/200);
+ return sum/200;
 }
+
 
 int Motor::getEncCount()
 {

@@ -8,15 +8,8 @@ LoadCell LoadCell::FR(A11, 1, 0);
 LoadCell LoadCell::MR(A12, 1, 0);
 LoadCell LoadCell::BR(A13, 1, 0);
 
-LoadCell::LoadCell(int Pin, float LoadScale, float LoadOffset)
-{
-	_Pin = Pin;
-	_Loadscale = LoadScale;
-	_LoadOffset = LoadOffset;
-	pinMode(_Pin, INPUT);
+LoadCell::LoadCell(int pin, float loadScale, float loadOffset) : _pin(pin), _loadScale(loadScale), _loadOffset(loadOffset) {
+	pinMode(pin, INPUT);
 }
 
-LoadCell::~LoadCell()
-{
-
-}
+LoadCell::~LoadCell() {}

@@ -9,10 +9,9 @@ public:
 	static LoadCell FL, ML, BL, FR, MR, BR;
 	~LoadCell();
 private:
-	LoadCell(int Pin, float LoadScale, float LoadOffset);
-	int _Pin;
-	float _Loadscale;
-	float _LoadOffset;
+	LoadCell(int pin, float loadScale, float loadOffset);
+	int _pin;
+	float _loadScale, _loadOffset;
 };
 
 

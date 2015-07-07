@@ -204,6 +204,11 @@ function initTopics() {
 	messageType: 'geometry_msgs/Twist'
     });
 
+   serverPing.subscribe(function(message) {
+	//Reset timer
+	timeCounter = 0;
+    });
+
     listener.subscribe(function(message){
         listenerIn.value += listener.name + ': ' + message.data + '\n\n';
     });
@@ -252,11 +257,6 @@ function initTopics() {
 	};
 	imgObj.src = 'data:image/jpg;base64,'+message.data;
     });
-
-    serverPing.subscribe(function(message) {
-	//Reset timer
-	timeCounter = 0;
-    });
 }
 
 function closeSockets() {
@@ -269,7 +269,10 @@ function closeSockets() {
     encoderSensors.unsubscribe();
     serverPing.unsubscribe();
     VO_Velocity.unsubscribe();
+    image_depthCompressed.unsubscribe();
+    connectionStatus.style.color = 'Red';
     ctx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
+    depthCtx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
     ros.close();
 };
 

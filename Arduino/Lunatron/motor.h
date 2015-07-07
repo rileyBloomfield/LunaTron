@@ -26,9 +26,7 @@ class Motor
 	static Motor* location[6];
 	
 	private:
-	static const int POLL_COUNT = 2000
-;
-
+	static const int POLL_COUNT = 2000;
 	//Data
 	public:
 	

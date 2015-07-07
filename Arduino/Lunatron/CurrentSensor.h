@@ -2,6 +2,7 @@
 #define CurrentSensor_h
 
 #include "Arduino.h"
+#include "state.h"
 
 class CurrentSensor
 {
@@ -14,25 +15,19 @@ public:
 	~CurrentSensor();
 
 private:
-	CurrentSensor(int Pin, float CurrentScalepos, float CurrentScaleneg, float CurrentOffsetpos, float CurrentOffsetneg);
+	CurrentSensor(int pin, float currentScalePos, float currentScaleNeg, float currentOffsetPos, float currentOffsetNeg);
 
 //Data
 public:
-	int Pin;
+	int _pin;
 
 private:
-	float _CurrentScalepos;
-	float _CurrentScaleneg;
-	float _CurrentOffsetpos;
-	float _CurrentOffsetneg;
-	
-	float _posxintercept;
-	float _negxintercept;
+	float _currentScalePos, _currentScaleNeg, _currentOffsetPos, _currentOffsetNeg;
+	float _posxIntercept, _negxIntercept;
 
 //Methods
 public:
-	float operator()(float reading);
-	
+	int operator()(int reading, State &direction);
 };
 
 
