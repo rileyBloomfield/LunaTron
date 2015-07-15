@@ -37,7 +37,7 @@ class Motor
 	float _dutyCycle;
 	State* _direction;
 	CurrentSensor* _currsensor;
-	LoadCell* _LoadSensor;
+        LoadCell* _loadCell;
 	//TWI_Comm* _comm;
 	float diameter;
 	
@@ -50,7 +50,7 @@ class Motor
 	~Motor();
 
 	private:
-	Motor(int PWMpin, int pinA, int pinB, State &direction, CurrentSensor &location);
+	Motor(int PWMpin, int pinA, int pinB, State &direction, CurrentSensor &currentlocation, LoadCell &loadLocation);
 
 	//Methods
 	public:
@@ -60,6 +60,7 @@ class Motor
 
 	void setDuty(float duty);
 	float getCurrent();
+        float getLoad();
 	int getEncCount();
 	void ZeroEncCount();
 	//void calcVelocity(unsigned long currentTime, unsigned long pastTime);

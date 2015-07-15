@@ -50,7 +50,13 @@ void setup()
   
   //init serial comm
   Serial.begin(57600);
+  
+      for (int h = 0; h < 3; h++)
+        Motor::location[h]->setDirection(State::BRAKE);
+      for (int h = 3; h < 6; h++)
+        Motor::location[h]->setDirection(State::BRAKE);
 }
+
 
 void loop()
 {
@@ -69,12 +75,12 @@ void loop()
   delay(2000);
 }
 
+
 void publishCurrent() {
   //get data from motors
   char msg[64] = {0}, *m = msg; 
   for (int i = 0; i < 6; i++) {
-    float f = Motor::location[i]->getCurrent();
-    dtostrf(f, 4, 2, m);
+    dtostrf(Motor::location[i]->getCurrent(), 4, 2, m);
     while(*m) { m++; }
     *m++ = ',';
   }
@@ -85,13 +91,20 @@ void publishCurrent() {
   nh.spinOnce();
 }
 
+
+
+
+
 void publishLoad() {
+  float f = Motor::location[2]->getLoad();
+  Serial.println(f);
     nh.spinOnce();
 }
 
 void publishEncoder() {
     nh.spinOnce();
 }
+
 
 void driveAction(const std_msgs::String& action) {
   char switchChar = action.data[0];

@@ -7,11 +7,15 @@ class LoadCell
 {
 public:
 	static LoadCell FL, ML, BL, FR, MR, BR;
+
 	~LoadCell();
+        float getLoad();
+        int _pin;
+        float operator()(int reading);
+        
 private:
 	LoadCell(int pin, float loadScale, float loadOffset);
-	int _pin;
-	float _loadScale, _loadOffset;
+        float _loadScale, _loadOffset;
 };
 
 

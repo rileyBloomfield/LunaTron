@@ -13,3 +13,19 @@ LoadCell::LoadCell(int pin, float loadScale, float loadOffset) : _pin(pin), _loa
 }
 
 LoadCell::~LoadCell() {}
+
+float LoadCell::operator()(int reading) {
+  return ((0.0006*reading*reading*reading) - (0.4521*reading*reading) + (118.76*reading) - 9300)/100;
+}
+
+
+
+
+
+
+
+
+
+
+
+

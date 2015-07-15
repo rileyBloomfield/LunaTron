@@ -4,16 +4,16 @@
 #include "CurrentSensor.h"
 //#include "Comm.h"
 
-Motor Motor::BL(2, 22, 24, State::BRAKE, CurrentSensor::BL);
-Motor Motor::ML(3, 28, 30, State::BRAKE, CurrentSensor::ML);
-Motor Motor::FL(4, 34, 36, State::BRAKE, CurrentSensor::FL);
-Motor Motor::FR(5, 40, 42, State::BRAKE, CurrentSensor::FR);
-Motor Motor::MR(6, 46, 48, State::BRAKE, CurrentSensor::MR);
-Motor Motor::BR(7, 53, 51, State::BRAKE, CurrentSensor::BR);
+Motor Motor::BL(2, 22, 24, State::BRAKE, CurrentSensor::BL, LoadCell::BL);
+Motor Motor::ML(3, 28, 30, State::BRAKE, CurrentSensor::ML, LoadCell::ML);
+Motor Motor::FL(4, 34, 36, State::BRAKE, CurrentSensor::FL, LoadCell::FL);
+Motor Motor::FR(5, 40, 42, State::BRAKE, CurrentSensor::FR, LoadCell::FR);
+Motor Motor::MR(6, 46, 48, State::BRAKE, CurrentSensor::MR, LoadCell::MR);
+Motor Motor::BR(7, 53, 51, State::BRAKE, CurrentSensor::BR, LoadCell::BR);
 
 Motor* Motor::location[6] = { &Motor::BL, &Motor::ML, &Motor::FL, &Motor::FR, &Motor::MR, &Motor::BR };
 
-Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location) {
+Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& currentLocation, LoadCell &loadLocation) {
 	//Set Motor Values
 	_PWMpin = pin;
 	_dutyCycle = 1;
@@ -21,7 +21,8 @@ Motor::Motor(int pin, int A, int B, State& dir,  CurrentSensor& location) {
 	_pinB = B;
 	_direction = &dir;
 	//_comm = &TWI_Comm::TWI_PORT;
-	_currsensor = &location;
+	_currsensor = &currentLocation;
+        _loadCell = &loadLocation;
 	pinMode(_PWMpin, OUTPUT);
 	analogWrite(_PWMpin, _dutyCycle * 255);
 	pinMode(_pinA, OUTPUT);
@@ -58,6 +59,10 @@ float Motor::getCurrent() {
     sum+= (*_currsensor)(analogRead(_currsensor->_pin), *_direction);
   }
  return sum/200;
+}
+
+float Motor::getLoad() {
+  return (*_loadCell)(analogRead(_loadCell->_pin));
 }
 
 
