@@ -51,12 +51,8 @@ void setup()
   //init serial comm
   Serial.begin(57600);
   
-      for (int h = 0; h < 3; h++)
-        Motor::location[h]->setDirection(State::BRAKE);
-      for (int h = 3; h < 6; h++)
-        Motor::location[h]->setDirection(State::BRAKE);
+  Motor::location[1]->setDirection(State::FWD);
 }
-
 
 void loop()
 {
@@ -75,7 +71,6 @@ void loop()
   delay(2000);
 }
 
-
 void publishCurrent() {
   //get data from motors
   char msg[64] = {0}, *m = msg; 
@@ -91,14 +86,19 @@ void publishCurrent() {
   nh.spinOnce();
 }
 
-
-
-
-
 void publishLoad() {
-  float f = Motor::location[2]->getLoad();
-  Serial.println(f);
-    nh.spinOnce();
+  //get data from motors
+  char msg[64] = {0}, *m = msg; 
+  for (int i = 0; i < 6; i++) {
+    dtostrf(Motor::location[i]->getLoad(), 4, 2, m);
+    while(*m) { m++; }
+    *m++ = ',';
+  }
+  *(--m) = 0;
+  //publish
+  loadData.data = msg;
+  loadSensors.publish(&loadData);
+  nh.spinOnce();
 }
 
 void publishEncoder() {

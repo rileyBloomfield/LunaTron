@@ -24,6 +24,9 @@ var dutyInput;
 //Current Elements
 var currentElements = [];
 
+//Load Elements
+var loadElements = [];
+
 //Velocity Elements
 var xVel, yVel, zVel;
 
@@ -70,6 +73,14 @@ window.onload=function() {
     currentElements[3] = document.getElementById('LRC');
     currentElements[4] = document.getElementById('LMC');
     currentElements[5] = document.getElementById('LFC');
+
+    //Load Display
+    loadElements[0] = document.getElementById('LFS');
+    loadElements[1] = document.getElementById('LMS');
+    loadElements[2] = document.getElementById('LRS');
+    loadElements[3] = document.getElementById('RRS');
+    loadElements[4] = document.getElementById('RMS');
+    loadElements[5] = document.getElementById('RFS');
 
     //Velocity Display
     xVel = document.getElementById('xVel');
@@ -226,7 +237,11 @@ function initTopics() {
     });
     
     loadSensors.subscribe(function(message) {
-	console.log(loadSensors.name+ ': '+ message.data + '\n');
+	//PARSE DATA
+	var sensors = message.data.split(',');
+	for (var i=0; i<loadElements.length; i++) {
+	    loadElements[i].innerHTML = sensors[i];
+        }
     });
 
     VO_Velocity.subscribe(function(message) {
@@ -271,8 +286,8 @@ function closeSockets() {
     VO_Velocity.unsubscribe();
     image_depthCompressed.unsubscribe();
     connectionStatus.style.color = 'Red';
-    ctx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
-    depthCtx.fillRect(0,0,canvas.width, canvas.height); //clear canvas to know video feed has stopped
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+    depthCtx.fillRect(0,0,canvas.width, canvas.height);
     ros.close();
 };
 
