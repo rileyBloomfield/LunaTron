@@ -2,6 +2,7 @@
 #include <avr/interrupt.h>
 #include "motor.h"
 #include "state.h"
+#include "OpticalFlowSensor.h"
 
 //rosserial libraries
 #include <ros.h>
@@ -11,6 +12,7 @@
 void publishCurrent();
 void publishLoad();
 void publishEncoder();
+void publishOdometry();
 void driveAction(const std_msgs::String& action);
 void dutyAction(const std_msgs::String& action);
 
@@ -18,7 +20,7 @@ void dutyAction(const std_msgs::String& action);
 ros::NodeHandle nh;
 
 //messages
-std_msgs::String currentData, loadData, encoderData;
+std_msgs::String currentData, loadData, encoderData, opticalFlowData;
 
 //subscribers
 ros::Subscriber<std_msgs::String> driveCommand("driveCommands", &driveAction);
@@ -28,11 +30,15 @@ ros::Subscriber<std_msgs::String> dutyCommand("dutyCommands", &dutyAction);
 ros::Publisher currentSensors("currentSensors", &currentData);
 ros::Publisher loadSensors("loadSensors", &loadData);
 ros::Publisher encoderSensors("encoderSensors", &encoderData);
+ros::Publisher opticalFlowSensors("opticalFlowSensors", &opticalFlowData);
 
 //charArray buffers
 char currentCharArray[60] = "1,2,3,4,5,6";
 char loadCharArray[60] = "1,2,3,4,5,6";
 char encoderCharArray[60] = "1,2,3,4,5,6";
+char odometry[3];
+
+OpticalFlowSensor* opticalFlowSensor;
 
 void setup()
 {
@@ -43,6 +49,7 @@ void setup()
   nh.advertise(currentSensors);
   nh.advertise(loadSensors);
   nh.advertise(encoderSensors);
+  nh.advertise(opticalFlowSensors);
   
   //subscirbers
   nh.subscribe(driveCommand);
@@ -51,7 +58,7 @@ void setup()
   //init serial comm
   Serial.begin(57600);
   
-  Motor::location[1]->setDirection(State::FWD);
+  opticalFlowSensor = new OpticalFlowSensor(14, 15, 0x03, 0xE7);
 }
 
 void loop()
@@ -65,10 +72,13 @@ void loop()
   //Obtain encoders and publish
   publishEncoder();
   
+  //Obtain optical flow sensor reading
+  publishOdometry();
+  
   //mandatory spin
   nh.spinOnce();
-
-  delay(2000);
+  
+  delay(200);
 }
 
 void publishCurrent() {
@@ -104,7 +114,6 @@ void publishLoad() {
 void publishEncoder() {
     nh.spinOnce();
 }
-
 
 void driveAction(const std_msgs::String& action) {
   char switchChar = action.data[0];
@@ -148,6 +157,18 @@ void dutyAction(const std_msgs::String& action) {
   }
 }
 
-
-
-
+void publishOdometry() {
+    opticalFlowSensor->getDistances(odometry, sizeof(odometry));
+    
+    char msg[64] = {0}, *m = msg; 
+    String valX((int)odometry[1]);
+    valX.toCharArray(m, sizeof(msg));
+    m += valX.length();
+    *m++ = ',';
+    String valY((int)odometry[2]);
+    valY.toCharArray(m, (sizeof(msg)));
+    
+    opticalFlowData.data = msg;
+    opticalFlowSensors.publish(&opticalFlowData);
+    nh.spinOnce();
+}

@@ -10,12 +10,11 @@ public:
 
 	~LoadCell();
         float getLoad();
-        int _pin;
-        float operator()(int reading);
         
 private:
-	LoadCell(int pin, float loadScale, float loadOffset);
-        float _loadScale, _loadOffset;
+	LoadCell(int pin, float loadMin, float loadMax, float loadSlope, float loadIntercept);
+        float _loadMin, _loadMax, _loadSlope, _loadIntercept;
+        int _pin;
 };
 
 

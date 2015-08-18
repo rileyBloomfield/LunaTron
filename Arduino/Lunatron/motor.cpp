@@ -62,7 +62,7 @@ float Motor::getCurrent() {
 }
 
 float Motor::getLoad() {
-  return (*_loadCell)(analogRead(_loadCell->_pin));
+  return _loadCell->getLoad();
 }
 
 
