@@ -160,13 +160,23 @@ void dutyAction(const std_msgs::String& action) {
 void publishOdometry() {
     opticalFlowSensor->getDistances(odometry, sizeof(odometry));
     
-    char msg[64] = {0}, *m = msg; 
+   /* char msg[64] = {0}, *m = msg; 
     String valX((int)odometry[1]);
     valX.toCharArray(m, sizeof(msg));
     m += valX.length();
     *m++ = ',';
     String valY((int)odometry[2]);
     valY.toCharArray(m, (sizeof(msg)));
+    */
+    
+    //get data from motors
+  char msg[64] = {0}, *m = msg; 
+  for (int i = 1; i < 3; i++) {
+    dtostrf((float)odometry[i]/636.86/0.2, 4, 2, m);
+    while(*m) { m++; }
+    *m++ = ',';
+  }
+  *(--m) = 0;
     
     opticalFlowData.data = msg;
     opticalFlowSensors.publish(&opticalFlowData);
