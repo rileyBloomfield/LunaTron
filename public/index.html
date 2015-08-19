@@ -14,7 +14,6 @@
 <body>
     <nav class="navbar navbar-default">
         <div class="container-fluid">
-            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a id="connectionStatus" style="color:red;">Disconected</a></li>
@@ -23,8 +22,8 @@
 		    <li><a>Frame Timeout: <input id="frameTimeoutInput" type="number" value="5" onchange="changeFrameTimeout();"></input></a></li>
 		    <li><a><button type="button" onclick="pingServer();">Ping Server</button></a></li>
                 </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
+            </div>
+        </div>
     </nav>
     <div class="row">
         <div class="col-md-4">
@@ -32,7 +31,7 @@
                 <div class="panel-body">
                     <div class="well">
                         <h5><u>Monitor</u></h5>
-                        <h6>Current</h6>
+                        <h6>Current (A)</h6>
                         <div class="row">
                             <div class="col-md-6">
                                 LF: <span id="LFC">0.00</span><br>
@@ -45,7 +44,7 @@
                                 RR: <span id="RRC">0.00</span><br>
                             </div>
                         </div>
-                        <h6>Strain</h6>
+                        <h6>Strain (N)</h6>
                         <div class="row">
                             <div class="col-md-6">
                                 LF: <span id="LFS">0.00</span><br>
@@ -58,64 +57,38 @@
                                 RR: <span id="RRS">0.00</span><br>
                             </div>
                         </div>
-			<h6>Ground Velocity</h6>
+			<h6>Ground Velocity (M/S)</h6>
                         <div class="row">
                             <div class="col-md-6">
                                 X: <span id="xVel">0.00</span><br>
                                 Y: <span id="yVel">0.00</span><br>
-                                Z: <span id="zVel">0.00</span><br>
                             </div>
                         </div>
                     </div>
-		    <div class="well">
-		    <h5>Serial Monitor</h5>
-		    DriveCommands:<input id="driveInput" type="text"></input><button id="driveButton" onclick="publishDriveCommand();">Send</button><br><br>
-		    DutyCommands:<input id="dutyInput" type="text"></input><button id="dutyButton" onclick="publishDutyCommand();">Send</button><br><br>
-<textarea readonly rows="15" cols="50" id="serialIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
-		    </div>
-                </div>
-            </div>
+            	</div>
+	    </div>
         </div>
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="well" style="text-align:center;">
-                        <h5><u>Webcam Video</u></h5>
-                        <canvas id="canvas" width="320px" height="240px"></canvas>
-			<br>
-			<h5><u>Depthcam Video</u></h5>
-			<canvas id="depthCanvas" width="165px" height="120px" style="display: inline-block; width: 320px;"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="well">
-                        <h5>Rosout - <a id="showhiderosout" onclick="toggleRosout();">hide</a></h5>
-                        <div id="rosoutDiv">
-                            <span>
-                                <input id="sendRosoutText" type="text">
-                                <button type="button" onclick="publishRosout();">Send</button>
-                            </span>
-                            <br><br>
-                            <textarea readonly rows="15" cols="50" id="rosoutIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
-                        </div><br>
-
-                        <h5>Listener - <a id="showhidelistener" onclick="toggleListener();">hide</a></h5>
-                        <div id="listenerDiv">
-                            <span>
-                                <input id="sendListenerText" type="text">
-                                <button type="button" onclick="publishListener();">Send</button>
-                            </span>
-                            <br><br>
-                            <textarea readonly rows="15" cols="50" id="listenerIn" style="resize: none; height: 50%; max-height: 50%;"></textarea>
-                        </div>
+			<div class="row">
+			    <div class="col-md-6">
+                        	 <h5><u>Webcam Video</u></h5>
+                        	<canvas id="canvas" width="320px" height="240px"></canvas>
+			    </div>
+			    <div class="col-md-6">
+				<h5><u>Depthcam Video</u></h5>
+				<canvas id="depthCanvas" width="165px" height="120px" style="width: 320px;"></canvas>
+			    </div>
+			</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+<button type="button" onclick="clearLog();" style="margin-left:10vw;">Clear</button>
+<button type="button" onclick="saveLog();">Save</button><br>
+<textArea id="dataLog" style="height:50vh; width:80vw; margin-left:10vw;"readonly>Current LF,Current LM, Current LR,Current RF,Current RM, Current RR,Force LF,Force LM, Force LR,Force RF,Force RM, Force RR,Velocity X,Velocity Y,Time</textArea>
 </body>
 </html>

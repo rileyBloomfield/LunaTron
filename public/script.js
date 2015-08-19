@@ -28,32 +28,23 @@ var currentElements = [];
 var loadElements = [];
 
 //Velocity Elements
-var xVel, yVel, zVel;
-
-//TextAreas
-var rosoutIn;
-var listenerIn;
-var serialOut;
+var xVel, yVel;
 
 //Image Canvas
-var ctx;
-var canvas;
-var depthCtx;
-var depthCanvas;
+var ctx,
+    canvas,
+    depthCtx,
+    depthCanvas;
 
 //Topics List
-var cmdVel;
-var rosout;
-var listener;
-var image_rawCompressed;
-var driveCommands;
-var dutyCommands;
-var currentSensors;
-var loadSensors;
-var encoderSensors;
-var serverPing;
-var VO_Velocity;
-var image_depthCompressed;
+var cmdVel,
+    image_rawCompressed,
+    currentSensors,
+    loadSensors,
+    encoderSensors,
+    opticalFlowSensors,
+    serverPing,
+    image_depthCompressed;
 
 window.onload=function() {
     //FIND ELEMENTS
@@ -85,7 +76,6 @@ window.onload=function() {
     //Velocity Display
     xVel = document.getElementById('xVel');
     yVel = document.getElementById('yVel');
-    zVel = document.getElementById('zVel');
 
     //Canvas Display
     canvas = document.querySelector('#canvas');
@@ -119,7 +109,22 @@ window.setInterval(function() {
 			attemptReconnect = true;
 		}	
 	}
+
 }, 200);
+
+//Log data every second
+setInterval(function() {
+    $("#dataLog").append("\n");
+    for (var i=0; i<currentElements.length; i++) {
+	$("#dataLog").append(currentElements[i].innerHTML + ",");
+    }
+    for (var i=0; i<loadElements.length; i++) {
+	$("#dataLog").append(loadElements[i].innerHTML + ",");
+    }
+    $("#dataLog").append(xVel.innerHTML + ",");
+    $("#dataLog").append(yVel.innerHTML + ",");
+    $("#dataLog").append(Math.round(Date.now()/1000));
+}, 1000);
 
 function initTopics() {
     //DEFINE CONNECTION
@@ -197,35 +202,15 @@ function initTopics() {
 	messageType: 'std_msgs/String'
     });
 
-    driveCommands = new ROSLIB.Topic({
+    opticalFlowSensors = new ROSLIB.Topic({
 	ros: ros,
-	name: '/driveCommands',
+	name: '/opticalFlowSensors',
 	messageType: 'std_msgs/String'
-    });
-
-    dutyCommands = new ROSLIB.Topic({
-	ros: ros,
-	name: '/dutyCommands',
-	messageType: 'std_msgs/String'
-    });
-
-    VO_Velocity = new ROSLIB.Topic({
-	ros: ros,
-	name: '/VO_Velocity',
-	messageType: 'geometry_msgs/Twist'
     });
 
    serverPing.subscribe(function(message) {
 	//Reset timer
 	timeCounter = 0;
-    });
-
-    listener.subscribe(function(message){
-        listenerIn.value += listener.name + ': ' + message.data + '\n\n';
-    });
-
-    rosout.subscribe(function(message) {
-        rosoutIn.value += message.name +': '+ message.msg + '\n\n';;
     });
 
     currentSensors.subscribe(function(message) {
@@ -244,10 +229,10 @@ function initTopics() {
         }
     });
 
-    VO_Velocity.subscribe(function(message) {
-	xVel.innerHTML = message.linear.x;
-	yVel.innerHTML = message.linear.y;
-	zVel.innerHTML = message.linear.z;
+    opticalFlowSensors.subscribe(function(message) {
+	var sensors = message.data.split(',');
+	xVel.innerHTML = sensors[0];
+	yVel.innerHTML = sensors[1];
     });
 
     encoderSensors.subscribe(function(message) {
@@ -283,7 +268,6 @@ function closeSockets() {
     loadSensors.unsubscribe();
     encoderSensors.unsubscribe();
     serverPing.unsubscribe();
-    VO_Velocity.unsubscribe();
     image_depthCompressed.unsubscribe();
     connectionStatus.style.color = 'Red';
     ctx.fillRect(0,0,canvas.width, canvas.height);
@@ -375,30 +359,26 @@ function changeFrameTimeout() {
         acceptedTimeDiff = frameTimeoutInput.value;
 };
 
-function publishDriveCommand() {
-	var input = driveInput.value;
-	driveInput.value = '';
-	var mess = new ROSLIB.Message({
-            data: input
-        });
-	driveCommands.publish(mess);
+function clearLog() {
+    var r = confirm("Clear log?");
+    if(r==true) {
+	$("#dataLog").html("Current LF,Current LM, Current LR,Current RF,Current RM, Current RR,Force LF,Force LM, Force LR,Force RF,Force RM, Force RR,Velocity X,Velocity Y,Time");
+    }
+}
 
-};
+function saveLog() {
+    var content = $("#dataLog").val();
+    var contentType = 'application/octet-stream';
+    var filename = 'dataLog';
+    var fileExtension = ".csv";
 
-function publishDutyCommand() {
-	var input = dutyInput.value;
-	dutyInput.value = '';
-	var mess = new ROSLIB.Message({
-            data: input
-        });
-	dutyCommands.publish(mess);
-};
-
-
-
-
-
-
+    if(!contentType) contentType = 'application/octet-stream';
+    var a = document.createElement('a');
+    var blob = new Blob([content], {'type':contentType});
+    a.href = window.URL.createObjectURL(blob);
+    a.download = filename+fileExtension;
+    a.click();
+}
 
 
 
