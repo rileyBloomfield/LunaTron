@@ -16,6 +16,7 @@ var inputIP;
 var timeCounter = 0;
 var acceptedTimeDiff = 5;
 var frameTimeoutInput;
+var logDelay = 1000;
 
 //Control Elements
 var driveInput;
@@ -109,22 +110,26 @@ window.setInterval(function() {
 			attemptReconnect = true;
 		}	
 	}
-
 }, 200);
 
 //Log data every second
-setInterval(function() {
-    $("#dataLog").append("\n");
-    for (var i=0; i<currentElements.length; i++) {
-	$("#dataLog").append(currentElements[i].innerHTML + ",");
-    }
-    for (var i=0; i<loadElements.length; i++) {
-	$("#dataLog").append(loadElements[i].innerHTML + ",");
-    }
-    $("#dataLog").append(xVel.innerHTML + ",");
-    $("#dataLog").append(yVel.innerHTML + ",");
-    $("#dataLog").append(Math.round(Date.now()/1000));
-}, 1000);
+(function() {
+	var func = function() {
+		$("#dataLog").append("\n");
+		for (var i=0; i<currentElements.length; i++) {
+			$("#dataLog").append(currentElements[i].innerHTML + ",");
+		}
+		for (var i=0; i<loadElements.length; i++) {
+			$("#dataLog").append(loadElements[i].innerHTML + ",");
+		}
+		$("#dataLog").append(xVel.innerHTML + ",");
+		$("#dataLog").append(yVel.innerHTML + ",");
+		$("#dataLog").append(Date.now()/1000);
+
+		setTimeout(func, logDelay);
+	}
+	setTimeout(func, logDelay)
+})();
 
 function initTopics() {
     //DEFINE CONNECTION
@@ -380,6 +385,9 @@ function saveLog() {
     a.click();
 }
 
+function changeLogDelay() {
+    logDelay = $("#logDelay").val();
+}
 
 
 

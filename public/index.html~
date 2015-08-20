@@ -74,7 +74,7 @@
                     <div class="well">
 			<div class="row">
 			    <div class="col-md-6">
-                        	 <h5><u>Webcam Video</u></h5>
+                        	<h5><u>Webcam Video</u></h5>
                         	<canvas id="canvas" width="320px" height="240px"></canvas>
 			    </div>
 			    <div class="col-md-6">
@@ -88,7 +88,8 @@
         </div>
     </div>
 <button type="button" onclick="clearLog();" style="margin-left:10vw;">Clear</button>
-<button type="button" onclick="saveLog();">Save</button><br>
-<textArea id="dataLog" style="height:50vh; width:80vw; margin-left:10vw;"readonly>Current LF,Current LM, Current LR,Current RF,Current RM, Current RR,Force LF,Force LM, Force LR,Force RF,Force RM, Force RR,Velocity X,Velocity Y,Time          </textArea>
+<button type="button" onclick="saveLog();">Save</button>
+<input id="logDelay" type="number"></input><button type="button" onclick="changeLogDelay();">Change Log Delay</button><br>
+<textArea id="dataLog" style="height:50vh; width:80vw; margin-left:10vw;" readonly>Current LF,Current LM, Current LR,Current RF,Current RM, Current RR,Force LF,Force LM, Force LR,Force RF,Force RM, Force RR,Velocity X,Velocity Y,Time</textArea>
 </body>
 </html>
